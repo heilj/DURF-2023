@@ -1,0 +1,80 @@
+t = 0.05: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.42150, FracKnown = 0.42208
+Type = 2; FracTotal = 0.33827, FracKnown = 0.33874
+Type = 3; FracTotal = 0.00006, FracKnown = 0.00006
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.10: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.59011, FracKnown = 0.59092
+Type = 2; FracTotal = 0.16927, FracKnown = 0.16951
+Type = 3; FracTotal = 0.00044, FracKnown = 0.00044
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.15: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.65128, FracKnown = 0.65219
+Type = 2; FracTotal = 0.10793, FracKnown = 0.10808
+Type = 3; FracTotal = 0.00061, FracKnown = 0.00061
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.20: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.68875, FracKnown = 0.68971
+Type = 2; FracTotal = 0.07013, FracKnown = 0.07023
+Type = 3; FracTotal = 0.00094, FracKnown = 0.00094
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.25: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.71147, FracKnown = 0.71245
+Type = 2; FracTotal = 0.04681, FracKnown = 0.04687
+Type = 3; FracTotal = 0.00155, FracKnown = 0.00155
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.30: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.72473, FracKnown = 0.72573
+Type = 2; FracTotal = 0.03272, FracKnown = 0.03276
+Type = 3; FracTotal = 0.00238, FracKnown = 0.00238
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.35: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.73490, FracKnown = 0.73592
+Type = 2; FracTotal = 0.02144, FracKnown = 0.02147
+Type = 3; FracTotal = 0.00348, FracKnown = 0.00349
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.40: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.74219, FracKnown = 0.74322
+Type = 2; FracTotal = 0.01254, FracKnown = 0.01256
+Type = 3; FracTotal = 0.00508, FracKnown = 0.00509
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.45: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.74634, FracKnown = 0.74737
+Type = 2; FracTotal = 0.00685, FracKnown = 0.00686
+Type = 3; FracTotal = 0.00663, FracKnown = 0.00664
+---
+Total = 18095; Known = 0.99862
+
+==================
+t = 0.50: Viral < t; t < Quality < 1 - t; Junk > t
+Type = 1; FracTotal = 0.75059, FracKnown = 0.75163
+Type = 2; FracTotal = 0.00000, FracKnown = 0.00000
+Type = 3; FracTotal = 0.00923, FracKnown = 0.00924
+---
+Total = 18095; Known = 0.99862
+
+==================
