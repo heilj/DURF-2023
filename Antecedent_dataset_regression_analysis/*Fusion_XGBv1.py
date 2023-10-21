@@ -102,7 +102,7 @@ tt： y值对应的播放量的天数-1
 thres： 取用数据的特征天数最后一天的播放量下限，避免无效数据干扰
 len： 使用token作为特征时的token长度'''
 
-'''根据要用的特征从 read_token_file(直接输入token) read_knn_file(使用夸你呢获取相似度) read_rbf_file(rbf获取相似度) 中选一个来获取rbf_data
+'''根据要用的特征从 read_token_file(直接输入token) read_knn_file(使用knn获取相似度) read_rbf_file(rbf获取相似度) 中选一个来获取rbf_data
 '''
 '''根据使用的特征，calss，regressor的不同替换params
 '''
