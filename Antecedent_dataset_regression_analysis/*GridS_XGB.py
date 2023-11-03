@@ -61,13 +61,32 @@ xgb_param_rbf = {
     'grow_policy' : 'lossguide'
     }
 
+temp_best_rbf = {
+    'max_depth': 12,
+    'n_estimators': 109,
+    'gamma': 0,
+    'subsample': 0.6,
+    'colsample_bytree': 1,
+    'colsample_bylevel':1, 
+    'colsample_bynode':1,
+    'reg_alpha': 0,
+    'reg_lambda': 0.5,
+    'learning_rate': 0.03,
+    'objective': 'reg:squarederror',  # 回归任务的损失函数
+    'eval_metric': 'rmse',            # 评价指标为均方根误差
+    'seed': 42,
+    'max_delta_step': 15,
+    'min_child_weight': 7,
+    'grow_policy' : 'lossguide'
+    }
+
 param_dist = {
-    'max_depth': [6,8,9,10,15],            # 保持原始值
-    'n_estimators': [90,100,110,120,140],       # 保持原始值
-    'learning_rate': [0.03],     # 保持原始值
-    'gamma': [0],                # 保持原始值
-    'subsample': [0.5],          # 保持原始值
-    'colsample_bytree': [1],     # 保持原始值
+    'max_depth': [3, 5, 7, 9, 12],            # 保持原始值
+    'n_estimators': [80],       # 保持原始值
+    'learning_rate': [0.04],     # 保持原始值
+    'gamma': [ 0.05, 0.1, 0.2, 0.3,0,4, 0.5],                # 保持原始值
+    'subsample': [0.6, 0.7, 0.8, 0.9, 1],          # 保持原始值
+    'colsample_bytree': [0.8,0.85, 0.9, 0.95,1],     # 保持原始值
     'colsample_bylevel': [1],    # 保持原始值
     'colsample_bynode': [1],     # 保持原始值
     'reg_alpha': [0],            # 保持原始值
@@ -75,18 +94,58 @@ param_dist = {
     'objective': ['reg:squarederror'],  # 保持原始值
     'eval_metric': ['rmse'],             # 保持原始值
     'seed': [42],                # 保持原始值
-    'max_delta_step': [15],      # 保持原始值
-    'min_child_weight': [0.8],   # 保持原始值
+    'max_delta_step': [1,3,5,10,15],      # 保持原始值
+    'min_child_weight': [10,12,15,20],   # 保持原始值
     'grow_policy': ['lossguide'] # 保持原始值
 }
 
 param_dist_rbf = {
-    'max_depth': range(3,10,2),            # 保持原始值
-    'n_estimators': [110],       # 保持原始值
-    'learning_rate': [0.01,0.03,0.05,0.08,0.1,0.3,0.5],     # 保持原始值
+    'max_depth': [5, 6, 7, 9, 10, 12, 13, 15, 17],            # 保持原始值
+    'n_estimators': [109],       # 保持原始值
+    'learning_rate': [0.03],     # 保持原始值
+    'gamma': [0, 0.01, 0.05, 0.1, 0.3, 0.5, 1],                # 保持原始值
+    'subsample': [0.6, 0.7, 0.8, 0.9, 1],          # 保持原始值
+    'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1],     # 保持原始值
+    'colsample_bylevel': [1],    # 保持原始值
+    'colsample_bynode': [1],     # 保持原始值
+    'reg_alpha': [0],            # 保持原始值
+    'reg_lambda': [0.5],         # 保持原始值
+    'objective': ['reg:squarederror'],  # 保持原始值
+    'eval_metric': ['rmse'],             # 保持原始值
+    'seed': [42],                # 保持原始值
+    'max_delta_step': [15],      # 保持原始值
+    'min_child_weight': [1, 3, 5, 7],   # 保持原始值
+    'grow_policy': ['lossguide'] # 保持原始值
+}
+
+temp_rbf = {
+    'max_depth': [12],            # 保持原始值
+    'n_estimators': [109],       # 保持原始值
+    'learning_rate': [0.03],
+    'eta': [0.3], #[0,0.001, 0.005,0.01, 0.02,  0.03, 0.04, 0.05, 0.1, 0.5, 0.8, 1],     # 保持原始值
     'gamma': [0],                # 保持原始值
-    'subsample': [0.5],          # 保持原始值
+    'subsample': [0.6],          # 保持原始值
     'colsample_bytree': [1],     # 保持原始值
+    'colsample_bylevel': [1],    # 保持原始值
+    'colsample_bynode': [1],     # 保持原始值
+    'reg_alpha': [0],            # 保持原始值
+    'reg_lambda': [0.5],         # 保持原始值
+    'objective': ['reg:squarederror'],  # 保持原始值
+    'eval_metric': ['rmse'],             # 保持原始值
+    'seed': [42],                # 保持原始值
+    'max_delta_step': [15],      # 保持原始值
+    'min_child_weight': [7],   # 保持原始值
+    'grow_policy': ['lossguide'] # 保持原始值
+}
+
+temp = {
+    'max_depth': [5],            # 保持原始值
+    'n_estimators': [50,60,70,80,90,100,110,120,150],       # 保持原始值
+    'learning_rate': [0,0.001, 0.005,0.01, 0.02,  0.03,0.035, 0.04,0.045, 0.05, 0.1, 0.5, 0.8, 1],
+    'eta': [0.3], #[0,0.001, 0.005,0.01, 0.02,  0.03, 0.04, 0.05, 0.1, 0.5, 0.8, 1],     # 保持原始值
+    'gamma': [0.3],                # 保持原始值
+    'subsample': [0.7],          # 保持原始值
+    'colsample_bytree': [0.9],     # 保持原始值
     'colsample_bylevel': [1],    # 保持原始值
     'colsample_bynode': [1],     # 保持原始值
     'reg_alpha': [0],            # 保持原始值
@@ -95,7 +154,7 @@ param_dist_rbf = {
     'eval_metric': ['rmse'],             # 保持原始值
     'seed': [42],                # 保持原始值
     'max_delta_step': [15],      # 保持原始值
-    'min_child_weight': range(1,6,2),   # 保持原始值
+    'min_child_weight': [12],   # 保持原始值
     'grow_policy': ['lossguide'] # 保持原始值
 }
 
@@ -128,7 +187,7 @@ def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= True,thresho
         rbf_data = read_token_file(source, threshold, CLASS, len)
         file2lst = read_file(f'{current_dir}/{source}_dao.csv',rbf_data,True ,tr, tt, thres)
         regression_lst = classfy(CLASS, file2lst, threshold, source)
-        GridS_XGB(regression_lst,xgb_param_rbf,param_dist_rbf)
+        GridS_XGB(regression_lst,xgb_param_rbf,temp_rbf)
 
     else:
         rbf_data = read_token_file(source, threshold, CLASS, len)
@@ -137,6 +196,6 @@ def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= True,thresho
         GridS_XGB(regression_lst,xgb_param,param_dist)
 
 
-main(CLASS1,source1,'XGB',True, True,0.3,200,3)
+main(CLASS1,source1,'XGB',True, None,0.3,thres=50)
 
 

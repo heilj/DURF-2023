@@ -58,6 +58,23 @@ xgb_param_rbf = {
     'min_child_weight': 0.8,
     'grow_policy' : 'lossguide'
     }
+temp_xgb_rbf = {'colsample_bylevel': 1,
+                'colsample_bynode': 1,
+                'colsample_bytree': 0.8, 
+                'eval_metric': 'rmse', 
+                'gamma': 0, 
+                'grow_policy': 
+                'lossguide', 
+                'learning_rate': 0.1, 
+                'max_delta_step': 15, 
+                'max_depth': 3, 
+                'min_child_weight': 1, 
+                'n_estimators': 110, 
+                'objective': 'reg:squarederror', 
+                'reg_alpha': 0, 
+                'reg_lambda': 0.3, 
+                'seed': 42, 
+                'subsample': 1}
 
 SGD_viral_param = {
     'loss': 'huber',
@@ -119,7 +136,7 @@ def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= True,thresho
     if regressor == 'XGB':
         if classfied:
             regression_lst = classfy(CLASS, file2lst, threshold, source)
-            XGB_MLR(regression_lst,xgb_param_rbf)
+            XGB_MLR(regression_lst,temp_xgb_rbf)
         else:
             XGB_MLR(file2lst,xgb_param_rbf)
     elif regressor == 'SGD':

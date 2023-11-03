@@ -17,14 +17,8 @@ from sklearn.model_selection import GridSearchCV
 '''key utils for model'''
 
 def get_parrent():
-    # 获取当前工作目录
-    current_working_directory = os.getcwd()
-
-    # 获取文件的母文件夹（假设文件名为 'myfile.txt'）
-    file_name = 'myfile.txt'
-    file_path = os.path.join(current_working_directory, file_name)
-    file_folder = os.path.dirname(file_path)
-    return file_folder
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    return current_directory
 
 def convert_to_list(s, float):
     
@@ -73,7 +67,8 @@ def read_knn_file(type='top',thres=0.3,CLASS='viral',centroids=10,k=3):
     return knn_data
 
 def read_token_file(type='top',thres=0.3,CLASS='viral',len = 20):
-    file_path = f'dict_{type}_{thres}_{CLASS}_tokens_len={len}.pkl'      
+    parent_dir = get_parrent()
+    file_path = parent_dir + f'/dict_{type}_{thres}_{CLASS}_tokens_len={len}.pkl'      
     with open(file_path,'rb') as file:
         token_data = pickle.load(file)
     file.close()
@@ -367,8 +362,8 @@ def XGB_MLR(regression_lst,params,test_size=0.3,):
     cv_r2 = cross_val_score(xgb_model, independent_variables, dependent_values, cv=4, scoring='r2')
     cv_mrse = cross_val_score(xgb_model, independent_variables, dependent_values, cv=4, scoring = mrse_scorer)
     
-    # print(f"cross validation 均相对平方误差（Mean Relative Squared Error）：{cv_mrse}")
-    # print(f"cross validation r2：{cv_r2}")
+    print(f"cross validation 均相对平方误差（Mean Relative Squared Error）：{cv_mrse}")
+    print(f"cross validation r2：{cv_r2}")
     print(f"cross validation 平均 均相对平方误差（Mean Relative Squared Error）：{cv_mrse.mean()}")
     print(f"cross validation 平均 r2：{cv_r2.mean()}")
 

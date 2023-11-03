@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 from sklearn.decomposition import PCA
 
-path = 'top_0.3_viral_tokens.pkl'
+path = 'top_0.3_quality_tokens.pkl'
 
 '''对要进行pca对token预处理，整理为list，减小处理压力'''
 
@@ -18,4 +18,4 @@ for token in data_dict.values():
         t = False
     else:
         data = np.append(data,values=token,axis=0)
-np.save('list_top_0.3_viral_tokens',data)
+np.save('list_top_0.3_qualtiy_tokens',data)

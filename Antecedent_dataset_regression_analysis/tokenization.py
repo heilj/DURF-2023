@@ -6,8 +6,8 @@ import subprocess
 import pickle
 import os
 
-pathin = "top_thres0.3_viral_checked_Ken.txt"
-pathout = "top_0.3_viral_tokens_Ken.pkl"
+pathin = "Antecedent_dataset_regression_analysis/top_thres.3_memoryless_checked.txt"
+pathout = "top_0.3_memoryless_tokens.pkl"
 
 '''基础tokenize方法，使用longformer处理长语句'''
 
@@ -39,16 +39,16 @@ def get_feature(path):
     for line in f: # 
         content = line.strip('\n')
         video_id = content  # getting the video id
-        videoname = '!'
-        for foldername, subfolders, filenames in os.walk('Visual_content/video_pkl_Ken'):
+        
+        for foldername, subfolders, filenames in os.walk('Antecedent_dataset_regression_analysis/Visual_content/video_pkl_6(memoryless)'):
             for filename in filenames:
                 if video_id in filename:
-                    videoname = filename
+                    
                     break
                 
         try:
             
-            with open(f'Visual_content/video_pkl_Ken/{videoname}', 'rb') as video_file:
+            with open(f'Antecedent_dataset_regression_analysis/Visual_content/video_pkl_6(memoryless)/{video_id}.mp4.pkl', 'rb') as video_file:
                 loaded_data = pickle.load(video_file)
                 action_labels = loaded_data["actions"]
                 # processing the action labels into a string
