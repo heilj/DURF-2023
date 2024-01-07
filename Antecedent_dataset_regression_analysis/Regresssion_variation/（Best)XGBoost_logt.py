@@ -12,9 +12,9 @@ from sklearn.metrics import make_scorer
 
 def main():
     classfied = True
-    classfied = False
+    classfied = True
     # file2lst = read_file('/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/top_dao.csv')
-    file2lst = read_file('/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/random_dao.csv')
+    file2lst = read_file('top_dao.csv')
     if classfied:
         regression_lst = classfy("viral", file2lst, 0.3)
         MLR(regression_lst)
@@ -93,7 +93,7 @@ def read_file(file_pass):
                     # print(k)
                     # if k != 0:
                     small_lst = result_list[i]
-                    small_lst[1] = small_lst[1][1:7]
+                    small_lst[1] = small_lst[1][1:8]
                     small_lst[1] = convert_to_daily(small_lst[1])
                     small_lst.append([k])
                     # print(small_lst[2])
@@ -127,13 +127,13 @@ def classfy(CLASS, videos, threshold):
     把dataset中的data根据一个threshold归到一个类中
     """
     if CLASS == "viral":
-        path = '/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/classfied_random/viral_classes.txt'
+        path = 'classfied_random/viral_classes.txt'
     elif CLASS == "quality":
-        path = "/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/classfied_random/quality_classes.txt"
+        path = "classfied_random/quality_classes.txt"
     elif CLASS == "junk":
-        path = "/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/classfied_random/junk_classes.txt"
+        path = "classfied_random/junk_classes.txt"
     elif CLASS == "memoryless":
-        path = "/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/classfied_random/memoryless_classes.txt"
+        path = "classfied_random/memoryless_classes.txt"
     
     #从txt文件中读取所有该列别的视频id
     file = open(path,"r")
@@ -367,14 +367,14 @@ def MLR(regression_lst):
 
     y_test = inverselogt(y_test)
     # 绘制散点图
-    plt.figure(figsize=(10, 6))
-    plt.scatter(y_test, y_pred, color='blue', alpha=0.7)
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.title('True Values vs. Predicted Values (Log Scale)')
-    plt.xlabel('True Values (Log Scale)')
-    plt.ylabel('Predicted Values (Log Scale)')
-    plt.show()
+    # plt.figure(figsize=(10, 6))
+    # plt.scatter(y_test, y_pred, color='blue', alpha=0.7)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # plt.title('True Values vs. Predicted Values (Log Scale)')
+    # plt.xlabel('True Values (Log Scale)')
+    # plt.ylabel('Predicted Values (Log Scale)')
+    # plt.show()
 
     # # 绘制残差图
     # plt.figure(figsize=(10, 6))

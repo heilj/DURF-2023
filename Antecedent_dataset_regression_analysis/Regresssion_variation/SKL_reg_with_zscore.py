@@ -13,9 +13,9 @@ from sklearn.metrics import make_scorer
 def main():
     classfied = True
     # classfied = False
-    file2lst = read_file('/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/top_dao.csv')
+    file2lst = read_file('top_dao.csv')
     if classfied:
-        regression_lst = classfy("viral", file2lst, 0.3)
+        regression_lst = classfy("quality", file2lst, 0.3)
         MLR(regression_lst)
     else:
         MLR(file2lst)
@@ -80,7 +80,7 @@ def read_file(file_pass):
 
         for i in range(len(result_list)):
             # if  result_list[i][0] in all_id:
-                if len(result_list[i][1]) > 30 and result_list[i][1][29] != 0 and result_list[i][1][2] > 0 and result_list[i][1][29] > 1000:
+                if len(result_list[i][1]) > 30 and result_list[i][1][29] != 0 and result_list[i][1][1] > 0 and result_list[i][1][29] > 10:
                     # print(result_list[i][1])
                     k = result_list[i][1][29]
                     
@@ -92,7 +92,7 @@ def read_file(file_pass):
                     # print(k)
                     # if k != 0:
                     small_lst = result_list[i]
-                    small_lst[1] = small_lst[1][1:7]
+                    small_lst[1] = small_lst[1][1:8]
                     small_lst[1] = convert_to_daily(small_lst[1])
                     small_lst.append([k])
                     # print(small_lst[2])
@@ -126,13 +126,13 @@ def classfy(CLASS, videos, threshold):
     把dataset中的data根据一个threshold归到一个类中
     """
     if CLASS == "viral":
-        path = '/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/classfied_top/viral_classes.txt'
+        path = 'classfied_top/viral_classes.txt'
     elif CLASS == "quality":
-        path = "/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/classfied_top/quality_classes.txt"
+        path = "classfied_top/quality_classes.txt"
     elif CLASS == "junk":
-        path = "/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/classfied_top/junk_classes.txt"
+        path = "classfied_top/junk_classes.txt"
     elif CLASS == "memoryless":
-        path = "/Users/gqs/Downloads/Antecedent_dataset_regression_analysis/classfied_top/memoryless_classes.txt"
+        path = "classfied_top/memoryless_classes.txt"
     
     #从txt文件中读取所有该列别的视频id
     file = open(path,"r")
@@ -204,12 +204,14 @@ def MLR(regression_lst):
     print(y_max)
     print(y_min)
     print(f'y mean: {y_mean}')
-    X_train, X_test, y_train, y_test = train_test_split(independent_variables, dependent_values, test_size=0.5, random_state=42)
     scalar = RobustScaler()
+    scalar2 = MinMaxScaler()
     independent_variables = scalar.fit_transform(independent_variables)
-    X_train_scaled = scalar.transform(X_train)
+    independent_variables = scalar2.fit_transform(independent_variables)
+    X_train_scaled, X_test_scaled, y_train, y_test = train_test_split(independent_variables, dependent_values, test_size=0.5, random_state=42)
+    # X_train_scaled = scalar.transform(X_train)
     # print(X_train_scaled)
-    X_test_scaled = scalar.transform(X_test)
+    # X_test_scaled = scalar.transform(X_test)
     y_train = y_train.reshape(-1,1)
     y_test = y_test.reshape(-1,1)
     dependent_values = dependent_values.reshape(-1,1)
@@ -232,7 +234,7 @@ def MLR(regression_lst):
     'eval_metric': 'rmse',            # 评价指标为均方根误差
     'seed': 42
     }
-    xgb_model = Ridge(alpha=1.0, fit_intercept= True) #名称为xgb_model,内核改为skl的ridge模型
+    xgb_model = Ridge(alpha=1.0, fit_intercept= True) 
     xgb_model.fit(X_train_scaled, y_train)
     #在test数据集上测试模型
     y_pred = xgb_model.predict(X_test_scaled)
@@ -343,14 +345,14 @@ def MLR(regression_lst):
 
     y_test = inverselogt(y_test)
     # 绘制散点图
-    plt.figure(figsize=(10, 6))
-    plt.scatter(y_test, y_pred, color='blue', alpha=0.7)
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.title('True Values vs. Predicted Values (Log Scale)')
-    plt.xlabel('True Values (Log Scale)')
-    plt.ylabel('Predicted Values (Log Scale)')
-    plt.show()
+    # plt.figure(figsize=(10, 6))
+    # plt.scatter(y_test, y_pred, color='blue', alpha=0.7)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # plt.title('True Values vs. Predicted Values (Log Scale)')
+    # plt.xlabel('True Values (Log Scale)')
+    # plt.ylabel('Predicted Values (Log Scale)')
+    # plt.show()
 
     # # 绘制残差图
     # plt.figure(figsize=(10, 6))

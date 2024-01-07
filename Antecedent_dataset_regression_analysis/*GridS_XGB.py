@@ -119,7 +119,7 @@ param_dist_rbf = {
 }
 
 temp_rbf = {
-    'max_depth': [12],            # 保持原始值
+    'max_depth':  [8,10,12,14,16],            # 保持原始值
     'n_estimators': [109],       # 保持原始值
     'learning_rate': [0.03],
     'eta': [0.3], #[0,0.001, 0.005,0.01, 0.02,  0.03, 0.04, 0.05, 0.1, 0.5, 0.8, 1],     # 保持原始值
@@ -196,6 +196,6 @@ def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= True,thresho
         GridS_XGB(regression_lst,xgb_param,param_dist)
 
 
-main(CLASS1,source1,'XGB',True, None,0.3,thres=50)
+main(CLASS1,source1,'XGB',classfied=True, include_rbf=True, threshold=0.3,thres=50)
 
 

@@ -15,6 +15,35 @@ from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
 
 '''key utils for model'''
+def make_mrse(y_true, y_pred):
+    mrse = 0 
+    count = 0
+    num = len(y_pred)
+    for i in range(num):
+        mrse += (((y_pred[i])/(y_true[i])) - 1)**2
+        count += 1
+    mrse = mrse/count
+    print(mrse)
+    return mrse
+
+def model_mrse(model,X,y_true):
+    y_pred = model.predict(X)
+    mrse = make_mrse(y_true,y_pred)
+    return mrse
+
+def find_best_n_estimators(X_train_scaled, y_train, params):
+    dtrain = DMatrix(X_train_scaled, label= y_train)
+    cv_results = cv(
+        params,
+        dtrain,
+        num_boost_round=1000,  # Set a large value initially
+        nfold=5,
+        metrics='rmse',
+        early_stopping_rounds=20,  # Stop if performance hasn't improved in 50 rounds
+        seed=42
+        )
+    n_estimators = cv_results.shape[0]
+    print(n_estimators) 
 
 def get_parrent():
     current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -106,7 +135,7 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=29,thres=10):
                     k = result_list[i][1][tt]
                     small_lst = result_list[i]
                     id = small_lst[0]
-                    small_lst[1] = small_lst[1][1:tr]
+                    small_lst[1] = small_lst[1][1:tr+1]
                     small_lst[1] = convert_to_daily(small_lst[1])
                     small_lst.append([k])
                     small_lst.append(rbf_data[id])
@@ -120,7 +149,7 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=29,thres=10):
                 if len(result_list[i][1]) > 30 and result_list[i][1][tt] != 0 and result_list[i][1][1] > 0 and result_list[i][1][tt] > thres:
                     k = result_list[i][1][tt]
                     small_lst = result_list[i]
-                    small_lst[1] = small_lst[1][1:tr]
+                    small_lst[1] = small_lst[1][1:tr+1]
                     small_lst[1] = convert_to_daily(small_lst[1])
                     small_lst.append([k])
                     
@@ -130,11 +159,11 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=29,thres=10):
             if len(result_list[i][1]) > 30 and result_list[i][1][tt] != 0 and result_list[i][1][1] > 0 and result_list[i][1][tt] > thres:
                 k = result_list[i][1][tt]
                 small_lst = result_list[i]
-                small_lst[1] = small_lst[1][1:tr]
+                small_lst[1] = small_lst[1][1:tr+1]
                 small_lst[1] = convert_to_daily(small_lst[1])
                 small_lst.append([k])    
                 result.append(small_lst)     
-
+    print(f'num of videos:{len(result)}')
     return result
 
 def classfy(CLASS, videos, threshold=0.3,type='top'):
@@ -418,7 +447,7 @@ def SGD_MLR(regression_lst,params,test_size=0.3,):
     independent_variables = scalar2.fit_transform(independent_variables)
     if len(data[0]) == 4:
         rbf_variables = np.array([item[3] for item in data])
-        rbf_variables = rbf_variables.reshape(-1,1)
+        print(rbf_variables.shape)
         # rbf_variables = scalar3.fit_transform(rbf_variables)
         rbf_variables = scalar4.fit_transform(rbf_variables)
         independent_variables = np.concatenate((independent_variables,rbf_variables),axis=1)
@@ -593,10 +622,12 @@ def Ridge_MLR(regression_lst,params,test_size=0.3,):
     print(f'y_min: {y_min}')
     print(f'y mean: {y_mean}')
     scalar = RobustScaler()
+    scalar2 = MinMaxScaler()
     # independent_variables = scalar.fit_transform(independent_variables)
     independent_variables = logt(independent_variables)
     dependent_values = logt(dependent_values)
     independent_variables = scalar.fit_transform(independent_variables)
+    independent_variables = scalar2.fit_transform(independent_variables)
     if len(data[0]) == 4:
         rbf_variables = np.array([item[3] for item in data])
         independent_variables = np.concatenate((independent_variables,rbf_variables),axis=1)
@@ -779,7 +810,7 @@ def SVR_MLR(regression_lst,params,test_size=0.3,):
     independent_variables = scalar2.fit_transform(independent_variables)
     if len(data[0]) == 4:
         rbf_variables = np.array([item[3] for item in data])
-        rbf_variables = rbf_variables.reshape(-1,1)
+        # rbf_variables = rbf_variables.reshape(-1,1)
         rbf_variables = scalar3.fit_transform(rbf_variables)
         independent_variables = np.concatenate((independent_variables,rbf_variables),axis=1)
     X_train, X_test, y_train, y_test = train_test_split(independent_variables, dependent_values, test_size=test_size, random_state=42)
@@ -941,14 +972,20 @@ def GridS_XGB(regression_lst,params,param_dist,test_size=0.3):
 
     scalar = RobustScaler()
     scalar2 = MinMaxScaler()
+    rbf_scalar = MinMaxScaler()
     independent_variables = logt(independent_variables)
+    dependent_values_rescaled = dependent_values
     dependent_values = logt(dependent_values)
     independent_variables = scalar.fit_transform(independent_variables)
     if len(data[0]) == 4:
         rbf_variables = np.array([item[3] for item in data])
         # rbf_variables = rbf_variables.reshape(-1,1)
-        # rbf_variables = scalar2.fit_transform(rbf_variables)
+        # rbf_variables = rbf_scalar.fit_transform(rbf_variables)
+        print(type(rbf_variables))
+        print(rbf_variables.shape)
+        print(independent_variables.shape)
         independent_variables = np.concatenate((independent_variables,rbf_variables),axis=1)
+        print(independent_variables.shape)
     X_train, X_test, y_train, y_test = train_test_split(independent_variables, dependent_values, test_size=test_size, random_state=42)
 
     X_train_scaled = X_train
@@ -963,32 +1000,47 @@ def GridS_XGB(regression_lst,params,param_dist,test_size=0.3):
     xgb_model.fit(X_train_scaled, y_train) #fit模型
     #在test数据集上测试模型
     y_pred = xgb_model.predict(X_test_scaled) #第一次predict y 使用xtest
-    y_pred = inverselogt(y_pred)
+    #rescale y pred
+    y_pred_rescaled = inverselogt(y_pred)
     r2_score = xgb_model.score(X_test_scaled, y_test)
     print(f"决定系数（R²）：{r2_score}")
-    y_test = inverselogt(y_test)
-    y_train = inverselogt(y_train)
+    #rescale y test
+    y_test_rescaled = inverselogt(y_test) 
+    file_path1 = "/Users/gqs/Downloads/test_y_true.txt"
+    file_path2 = "/Users/gqs/Downloads/test_y_pred.txt"
+
+    # Use savetxt to write the array to the file
+    # np.savetxt(file_path1, y_test)
+    # np.savetxt(file_path2, y_pred) 
+
+    # rescale y train
+    y_train_rescaled = inverselogt(y_train)
 
     y_pred_train = xgb_model.predict(X_train_scaled) #第二次predict y 使用xtrain
-    y_pred_train = inverselogt(y_pred_train)
+    #rescale y pred(train)
+    y_pred_train_rescaled = inverselogt(y_pred_train)
 
-    mse = mean_squared_error(y_test, y_pred)
+    mse = mean_squared_error(y_test_rescaled, y_pred)
     mrse = 0 
     count2 = 0
-    for i in range(len(y_test)):
-        mrse += (((y_pred[i])/(y_test[i])) - 1)**2
+    for i in range(len(y_test_rescaled)):
+        mrse += (((y_pred_rescaled[i])/(y_test_rescaled[i])) - 1)**2
         count2 += 1
     mrse = mrse/count2
 
     count2 = 0
     mrse_train = 0
-    for i in range(len(y_train)):
-        mrse_train += (((y_pred_train[i])/(y_train[i])) - 1)**2
+    for i in range(len(y_train_rescaled)):
+        mrse_train += (((y_pred_train_rescaled[i])/(y_train_rescaled[i])) - 1)**2
         count2 += 1
     mrse_train = mrse_train/count2
+    
 
+    n_mrse = make_mrse(y_test_rescaled,y_pred_rescaled)
 
-    mae = mean_squared_error(y_test,y_pred)
+    print(f"test_mrse: {n_mrse}")
+
+    mae = mean_squared_error(y_test_rescaled,y_pred_rescaled)
     print(f"均方误差（Mean Squared Error）：{mse}")
     print(f"均相对平方误差（Mean Relative Squared Error）：{mrse}")
     print(f"train 均相对平方误差（Mean Relative Squared Error -- train）：{mrse_train}")
@@ -996,27 +1048,30 @@ def GridS_XGB(regression_lst,params,param_dist,test_size=0.3):
 
     # Define the MRSE custom scoring function
     def custom_mrse(y_true, y_pred):
-        sum = 0
-        # print(y_pred / y_true)
-        for i in range(len(y_true)):
-            a = inverselogt(y_pred[i])
-            b = inverselogt(y_true[i])
-            sum += (((a / b) - 1) ** 2)
-
-        return sum/ len(y_true)
+        y_true = inverselogt(y_true)
+        y_pred = inverselogt(y_pred)
+        mrse = 0 
+        count = 0
+        num = len(y_pred)
+        for i in range(num):
+            mrse += ((((y_pred[i]))/(y_true[i])) - 1)**2
+            count += 1
+        mrse = mrse/count
+        return mrse
     # Create the custom scorer
     mrse_scorer = make_scorer(custom_mrse, greater_is_better=False)
 
     #cross validation
     cv_r2 = cross_val_score(xgb_model, independent_variables, dependent_values, cv=4, scoring='r2')
     cv_mrse = cross_val_score(xgb_model, independent_variables, dependent_values, cv=4, scoring = mrse_scorer)
-    
+    print('-----------------------------------------------------------------------------')
     print(f"cross validation 平均 均相对平方误差（Mean Relative Squared Error）：{cv_mrse.mean()}")
+    print(cv_mrse)
     print(f"cross validation 平均 r2：{cv_r2.mean()}")
 
     random_search = GridSearchCV(
         xgb_model, param_grid=param_dist, 
-         scoring=mrse_scorer, cv=5,n_jobs=-1
+         scoring=mrse_scorer, cv=4,n_jobs=-1
     )
     # 运行随机搜索
     random_search.fit(independent_variables, dependent_values)
@@ -1026,16 +1081,23 @@ def GridS_XGB(regression_lst,params,param_dist,test_size=0.3):
 
     # 使用最优参数训练模型
     best_xgb_model = XGBRegressor(**best_params)
-
+    best_xgb_model.fit(X_train_scaled, y_train)
     #cross validation round2
     cv2_r2 = cross_val_score(best_xgb_model, independent_variables, dependent_values, cv=4, scoring='r2')
     cv2_mrse = cross_val_score(best_xgb_model, independent_variables, dependent_values, cv=4, scoring = mrse_scorer)
     
-
-    print(f"cross validation2 平均 均方根误差（Mean Root Squared Error）：{cv2_mrse.mean()}")
+    print('-----------------------------------------------------------------------------')
+    print(f"cross validation2 平均 均方根误差（Mean Relative Squared Error）：{cv2_mrse.mean()}")
+    print(cv2_mrse)
     print(f"cross validation2 平均 r2：{cv2_r2.mean()}")
+    y_pred = best_xgb_model.predict(X_train_scaled)
+    y_pred = inverselogt(y_pred)
+    new_mrse = make_mrse(y_train_rescaled,y_pred)
+    # new_mrse = model_mrse(best_xgb_model,X_train_scaled, y_train_rescaled)
 
-    y_test = inverselogt(y_test)
+    print(f"测试mrse计算on train data rescaled: {new_mrse}")
+
+    return X_train_scaled, y_train_rescaled, random_search.best_params_
     # # 绘制散点图
     # plt.figure(figsize=(10, 6))
     # plt.scatter(y_test, y_pred, color='blue', alpha=0.7)
