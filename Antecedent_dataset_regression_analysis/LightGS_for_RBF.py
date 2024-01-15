@@ -27,8 +27,8 @@ xgb_param_rbf = {'colsample_bytree': 0.5,
                  'learning_rate': 0.03, 
                  'max_depth': 8, 
                  'min_child_weight': 6, 
-                 'n_estimators': 125, 
-                 'reg_alpha': 0.7, 
+                 'n_estimators': 130, 
+                 'reg_alpha': 0.1, 
                  'reg_lambda': 0, 
                  'subsample': 0.7}
 # {
@@ -90,11 +90,11 @@ temp_rbf = {
     'gamma': [0],   
     'subsample': [0.7], 
     'colsample_bytree': [0.5],   
-    'reg_alpha': [0,0.1,0.3,0.5,0.7,0.9,1],           
-    'reg_lambda': [0,0.1,0.3,0.5,0.7,0.9,1],            
+    'reg_alpha': [0.1],           
+    'reg_lambda': [0],            
 }
 
-def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= True,threshold=0.3,centroids=10,sigma=50,tr=8,tt=29,thres=10,len=20):
+def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= True,threshold=0.3,centroids=10,sigma=50,tr=7,tt=29,thres=10,len=20):
     current_dir = get_parrent()
     
     if include_rbf == True:
@@ -104,6 +104,6 @@ def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= True,thresho
         X_train_scaled, y_train, params = GridS_XGB(regression_lst,xgb_param_rbf,temp_rbf)
         find_best_n_estimators(X_train_scaled, y_train, params)
  
-main(CLASS2,source1,'XGB',classfied=True, include_rbf=True, threshold=0.3,thres=1000)
+main(CLASS2,source1,'XGB',classfied=True, include_rbf=True, threshold=0.3,thres=500)
 
 

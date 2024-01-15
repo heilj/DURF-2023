@@ -70,7 +70,7 @@ len： 使用token作为特征时的token长度'''
 '''根据使用的特征，calss，regressor的不同替换params
 '''
 
-def main(CLASS,source,regressor='ridge', classfied=True, include_rbf= True,threshold=0.3,centroids=10,sigma=50,tr=8,tt=29,thres=1000,len=20):
+def main(CLASS,source,regressor='ridge', classfied=True, include_rbf= True,threshold=0.3,centroids=10,sigma=50,tr=7,tt=29,thres=1000,len=20):
     current_dir = get_parrent()
     if include_rbf == True:
         rbf_data = read_token_file(source, threshold, CLASS, len)

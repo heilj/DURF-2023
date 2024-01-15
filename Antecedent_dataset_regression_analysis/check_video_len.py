@@ -6,7 +6,7 @@ import subprocess
 import pickle
 import os
 
-pathin = "top_thres0.3_viral_checked_Alan.txt"
+pathin = "top_thres0.3_viral_checked.txt"
 pathout = "top_0.3_memoryless_tokens.pkl"
 
 '''基础tokenize方法，使用longformer处理长语句'''
@@ -24,7 +24,7 @@ def get_feature(path):
     string_lst = []
     idlst = []
     outputdict = {}
-    max_length = 4000
+    max_length = 512
     count_long = 0
     count = 0
     count_short = 0
@@ -33,22 +33,24 @@ def get_feature(path):
     for line in f: # 
         content = line.strip('\n')
         video_id = content  # getting the video id
-        for foldername, subfolders, filenames in os.walk('Visual_content/video_pkl_Alan'):
+        for foldername, subfolders, filenames in os.walk('Visual_content/video_pkl_viral'):
             for filename in filenames:
                 if video_id in filename:
                     break
                 
         try:
             
-            with open(f'Visual_content/video_pkl_Alan/{video_id}.mp4.pkl', 'rb') as video_file:
+            with open(f'Visual_content/video_pkl_viral/{video_id}.mp4.pkl', 'rb') as video_file:
                 loaded_data = pickle.load(video_file)
                 action_labels = loaded_data["actions"]
                 # processing the action labels into a string
                 for i in range(len(action_labels)):
                     action_labels[i] = action_labels[i].strip('"')
+                
                 data = " ".join(action_labels)[:]
                 string_lst.append(data)
-                if len(data) >= max_length:
+                word_list = data.split()
+                if len(word_list) >= max_length:
                     count_long += 1
                 else:
                     count_short += 1

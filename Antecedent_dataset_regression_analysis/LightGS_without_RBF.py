@@ -110,7 +110,7 @@ temp = {
 
 
 
-def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= None,threshold=0.3,centroids=10,sigma=50,tr=8,tt=29,thres=10,len=20):
+def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= None,threshold=0.3,centroids=10,sigma=50,tr=7,tt=29,thres=10,len=20):
     current_dir = get_parrent()
     
 
