@@ -93,14 +93,14 @@ param_dist = {
 }
 
 temp = {
-    'n_estimators': [113,115,117,120,],
-    'learning_rate': [0.03],
-    'max_depth':  [4,5,6,7,8],  
-    'min_child_weight': [7],  
-    'gamma': [0],   
-    'subsample': [0.6], 
+    'n_estimators': [100],
+    'learning_rate': [0.05],
+    'max_depth':  [4],  
+    'min_child_weight': [9],  
+    'gamma': [0.3],   
+    'subsample': [0.9,1,3,5,7], 
     'colsample_bytree': [1],   
-    'reg_alpha': [0.7],           
+    'reg_alpha': [0],           
     'reg_lambda': [0],        
     
 }
@@ -118,11 +118,21 @@ def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= None,thresho
     file2lst = read_file(f'{current_dir}/{source}_dao.csv',rbf_data,include_rbf ,tr, tt, thres)
     if classfied:
         regression_lst = classfy(CLASS, file2lst, threshold, source)
-        GridS_XGB(regression_lst,xgb_param,temp)
+        # GridS_XGB(regression_lst,xgb_param,temp)
+        (mse, y_test), (mse_train, y_train),x_test = baseline_XGB(regression_lst, param= xgb_param)
+        residual_plot(mse, y_test,x_test)
+
+        remaining_indices = np.argsort(mse)[:-20]
+
+        # Extract corresponding y-values and residuals
+        remaining_y = y_test[remaining_indices]
+        remaining_mse = mse[remaining_indices]
+        print(np.mean(remaining_mse ** 2))
+
     else:
         GridS_XGB(file2lst,xgb_param,temp)
  
 
-main(CLASS1,source1,'XGB',classfied=True, include_rbf=None, threshold=0.3,thres=1000)
+main(CLASS1,source1,'XGB',classfied=True, include_rbf=None, threshold=0.3,thres=500)
 
 

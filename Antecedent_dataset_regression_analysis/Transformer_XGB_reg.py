@@ -7,7 +7,7 @@ from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from transformers import get_scheduler
 from tqdm.auto import tqdm
-import evaluate
+# import evaluate
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.kernel_ridge import KernelRidge
 import numpy as np
@@ -21,7 +21,7 @@ CLASS = CLASS1
 
 # Load BERT model
 bert_model = AutoModel.from_pretrained("bert-base-cased")
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("mps")
 print(device)
 
 # Load dataset
@@ -42,29 +42,38 @@ test_dataset = dataset['test']
 xgb_regressor = XGBRegressor()
 xgb_regressor.load_model('.json')
 
-
+attention_mask = torch.ones(1, 508)
 # Define a custom regressor on top of BERT encoder
 class CustomRegressor(nn.Module):
     def __init__(self,bert_model,trained_xgb):
         super(CustomRegressor,self).__init__()
         self.bert = bert_model
         self.xgb = trained_xgb
+        # CNN layers with stride
+        self.conv1 = nn.Conv1d(in_channels=768, out_channels=768, kernel_size=5, stride=5, padding=0)
+        self.conv2 = nn.Conv1d(in_channels=768, out_channels=768, kernel_size=5, stride=4, padding=0)
 
     def forward(self, x, attention_mask=None):
         view_data = x[:7]
         raw_content_data = x[7:508]
         content_data = self.bert(raw_content_data, attention_mask=attention_mask).last_hidden_state 
+        # Transpose content_data to match input shape for Conv1d (batch, channels, length)
+        content_data = content_data.transpose(1, 2)  # Shape: (batch_size, 768, 500)
+        # Apply CNN layers
+        content_data = self.conv1(content_data)  # First convolution layer
+        content_data = self.conv2(content_data)  # Second
+        # Flatten the last two dimensions
+        content_data = content_data.view(content_data.size(0), -1)
         content_data = content_data.cpu().detach().numpy()
-        #use multiple layers to change shape
-
         independent_variables = np.concatenate((view_data,content_data),axis=1)
+        
         regressor = self.xgb
         prediction = regressor.predict(independent_variables)
         return torch.from_numpy(prediction).float().to(device)    
 
 
 # Create an instance of the custom classifier
-custom_model = CustomRegressor(bert_model)
+custom_model = CustomRegressor(bert_model,)
 # Move the model to the desired device
 custom_model.to(device)
 # Create optimizer and scheduler

@@ -15,6 +15,14 @@ from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
 
 '''key utils for model'''
+def residual_check(y_true,y_pred):
+    errors = np.empty(len(y_true))
+    residual = abs(y_true - y_pred) 
+    error = (residual -1)**2
+    errors
+
+
+
 def make_mrse(y_true, y_pred):
     mrse = 0 
     count = 0
@@ -104,7 +112,7 @@ def read_token_file(type='top',thres=0.3,CLASS='viral',len = 20):
 
     return token_data
 
-def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=29,thres=10):
+def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=30,thres=10):
     result = []
     result_list = []
     with open(file_pass) as f:
@@ -131,7 +139,8 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=29,thres=10):
 
         for i in range(len(result_list)):
             if  result_list[i][0] in all_id:
-                if len(result_list[i][1]) > 30 and result_list[i][1][tt] != 0 and result_list[i][1][1] > 0 and result_list[i][1][tt] > thres:
+                if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr+1] > 100 and result_list[i][1][tt] > thres \
+                    and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
                     k = result_list[i][1][tt]
                     small_lst = result_list[i]
                     id = small_lst[0]
@@ -146,7 +155,8 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=29,thres=10):
             all_id.append(id)
         for i in range(len(result_list)):
             if  result_list[i][0] in all_id:
-                if len(result_list[i][1]) > 30 and result_list[i][1][tt] != 0 and result_list[i][1][1] > 0 and result_list[i][1][tt] > thres:
+                if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr] >100 and result_list[i][1][tt] > thres \
+                    and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
                     k = result_list[i][1][tt]
                     small_lst = result_list[i]
                     small_lst[1] = small_lst[1][1:tr+1]
@@ -156,7 +166,8 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=29,thres=10):
                     result.append(small_lst)
     else:
          for i in range(len(result_list)):
-            if len(result_list[i][1]) > 30 and result_list[i][1][tt] != 0 and result_list[i][1][1] > 0 and result_list[i][1][tt] > thres:
+            if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr+1] > 100 and result_list[i][1][tt] > thres \
+                    and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
                 k = result_list[i][1][tt]
                 small_lst = result_list[i]
                 small_lst[1] = small_lst[1][1:tr+1]
@@ -622,12 +633,12 @@ def Ridge_MLR(regression_lst,params,test_size=0.3,):
     print(f'y_min: {y_min}')
     print(f'y mean: {y_mean}')
     scalar = RobustScaler()
-    scalar2 = MinMaxScaler()
+    # scalar2 = MinMaxScaler()
     # independent_variables = scalar.fit_transform(independent_variables)
     independent_variables = logt(independent_variables)
     dependent_values = logt(dependent_values)
     independent_variables = scalar.fit_transform(independent_variables)
-    independent_variables = scalar2.fit_transform(independent_variables)
+    # independent_variables = scalar2.fit_transform(independent_variables)
     if len(data[0]) == 4:
         rbf_variables = np.array([item[3] for item in data])
         independent_variables = np.concatenate((independent_variables,rbf_variables),axis=1)
@@ -1108,3 +1119,214 @@ def GridS_XGB(regression_lst,params,param_dist,test_size=0.3):
     # plt.ylabel('Predicted Values (Log Scale)')
     # plt.show()
 
+def baseline_XGB(regression_lst, test_size=0.3,param=None):
+    #Multiple Linear Ridge Regression
+    data = regression_lst[:]
+    independent_variables = np.array([item[1] for item in data])
+    dependent_values = np.array([item[2] for item in data])
+    dependent_values.reshape(-1,1)
+    print(dependent_values.shape)
+    y_max = max([item[2][0] for item in data])
+    y_min = min([item[2][0] for item in data])
+    sum = 0 
+    for item in data:
+        sum += item[2][0]
+    y_mean = sum / len(data)
+    # print(f'y_max: {y_max}')
+    # print(f'y_min: {y_min}')
+    # print(f'y mean: {y_mean}')
+    scalar = RobustScaler()
+    scalar2 = RobustScaler()
+    scalar3 = RobustScaler()
+    independent_variables = logt(independent_variables)
+    dependent_values = scalar3.fit_transform(logt(dependent_values))
+    # independent_variables = scalar.fit_transform(independent_variables)
+    if len(data[0]) == 4:
+        rbf_variables = np.array([item[3] for item in data])
+        independent_variables = np.concatenate((independent_variables,rbf_variables),axis=1)
+    independent_variables = scalar2.fit_transform(independent_variables)
+    X_train, X_test, y_train, y_test = train_test_split(independent_variables, dependent_values, test_size=test_size, random_state=42)
+
+    X_train_scaled = X_train
+    X_test_scaled = X_test
+
+    # y_train = y_train.reshape(-1,1)
+    # y_test = y_test.reshape(-1,1)
+    # dependent_values = dependent_values.reshape(-1,1)
+    if param:
+        xgb_model = XGBRegressor(**param)
+    else:
+        xgb_model = XGBRegressor()
+    xgb_model.fit(X_train_scaled, y_train) #fit模型
+    #在test数据集上测试模型
+    y_pred = xgb_model.predict(X_test_scaled) #第一次predict y 使用xtest
+    y_pred = scalar3.inverse_transform(y_pred.reshape(-1,1))
+    y_pred = inverselogt(y_pred)
+    r2_score = xgb_model.score(X_test_scaled, y_test)
+    print(f"决定系数（R²）：{r2_score}")
+    y_test = scalar3.inverse_transform(y_test)
+    y_test = inverselogt(y_test)
+    y_train = scalar3.inverse_transform(y_train)
+    y_train = inverselogt(y_train)
+
+    y_pred_train = xgb_model.predict(X_train_scaled) #第二次predict y 使用xtrain
+    y_pred_train = scalar3.inverse_transform(y_pred_train.reshape(-1,1))
+    y_pred_train = inverselogt(y_pred_train)
+
+    y_pred_mean = np.mean(y_pred)
+    y_test_mean = np.mean(y_test)
+
+    print(f'mean of predict: {y_pred_mean}')
+    print(f'mean of test: {y_test_mean}')
+    mse = mean_squared_error(y_test, y_pred)
+
+    rse = ((y_pred/y_test) - 1)
+    mrse = np.mean(rse**2)
+
+    rse_train = ((y_pred_train/y_train) - 1)**2
+    mrse_train = np.mean(rse_train)
+
+
+    mae = mean_squared_error(y_test,y_pred)
+    print(f"均方误差（Mean Squared Error）：{mse}")
+    print(f"均相对平方误差（Mean Relative Squared Error）：{mrse}")
+    print(f"train 均相对平方误差（Mean Relative Squared Error -- train）：{mrse_train}")
+    print(f"平均绝对误差（Mean Absolute Error）：{mae}")
+
+
+    y_test = logt(y_test)
+    X_test = scalar2.inverse_transform(X_test)
+    X_test = inverselogt(X_test_scaled)
+    # Define the MRSE custom scoring function
+    def custom_mrse(y_true, y_pred):
+        y_true = inverselogt(y_true)
+        y_pred = inverselogt(y_pred)
+        mrse = np.mean(((y_pred/y_true) - 1)**2)
+        return mrse
+    # Create the custom scorer
+    mrse_scorer = make_scorer(custom_mrse, greater_is_better=True)
+
+    #cross validation
+    cv_r2 = cross_val_score(xgb_model, independent_variables, dependent_values, cv=4, scoring='r2')
+    cv_mrse = cross_val_score(xgb_model, independent_variables, dependent_values, cv=4, scoring = mrse_scorer)
+    
+    print(f"cross validation 均相对平方误差（Mean Relative Squared Error）：{cv_mrse}")
+    print(f"cross validation r2：{cv_r2}")
+    print(f"cross validation 平均 均相对平方误差（Mean Relative Squared Error）：{cv_mrse.mean()}")
+    print(f"cross validation 平均 r2：{cv_r2.mean()}")
+
+    return (rse,y_test), (rse_train, y_train), X_test
+
+def residual_plot(rse, y_test, X_test):
+    # Get indices of top 50 largest residuals
+    top_50_indices = np.argsort(rse)[-20:]
+    X_daily = [X_test[:,i] for i in range(0,7)]
+    X_test = np.sum(X_test,axis=1)
+
+    # Extract corresponding y-values and residuals
+    top_50_y = y_test[top_50_indices]
+    top_50_rse = rse[top_50_indices]
+    top_50_x = X_test[top_50_indices]
+    top_50_x_daily = [X_daily[i][top_50_indices] for i in range(0,7)]
+    
+
+    plt.figure(figsize=(8, 6))
+    plt.scatter(inverselogt(y_test), rse, color='blue', alpha=0.5)  # Scatter plot of residuals vs y-values
+    plt.scatter(inverselogt(top_50_y), top_50_rse, color='red')     # Scatter plot of top 50 residuals in red
+    # plt.axhline(y=0, color='black', linestyle='--')         # Add a horizontal line at y=0 for reference
+    plt.title('RSE Plot')
+    plt.xlabel('Y values')
+    plt.xscale('log')
+    plt.ylabel('RSE(residual)')
+    plt.grid(True)
+    plt.show()
+
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X_test, rse, color='blue', alpha=0.5)  # Scatter plot of residuals vs y-values
+    plt.scatter(top_50_x, top_50_rse, color='red')     # Scatter plot of top 50 residuals in red
+    # plt.axhline(y=0, color='black', linestyle='--')         # Add a horizontal line at y=0 for reference
+    plt.title('RSE Plot')
+    plt.xlabel('X values')
+    plt.xscale('log')
+    plt.ylabel('RSE(residual)')
+    plt.grid(True)
+    plt.show()
+
+    plt.figure(figsize=(8, 6))
+    # plt.scatter(y_test, rse, color='blue', alpha=0.5)  # Scatter plot of residuals vs y-values
+    # print(inverselogt(top_50_y))
+    plt.scatter(inverselogt(top_50_y), top_50_rse, color='red')     # Scatter plot of top 50 residuals in red
+    # plt.axhline(y=0, color='black', linestyle='--')         # Add a horizontal line at y=0 for reference
+    plt.title('RSE Plot')
+    plt.xlabel('Y values')
+    plt.xscale('log')
+    plt.ylabel('RSE(residual)')
+    # plt.xticks(np.arange(0, 50000, 1000))
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.show()
+
+    plt.figure(figsize=(8, 6))
+    # plt.scatter(y_test, rse, color='blue', alpha=0.5)  # Scatter plot of residuals vs y-values
+    # print(inverselogt(top_50_y))
+    print(top_50_x)
+    plt.scatter(top_50_x, top_50_rse, color='red')     # Scatter plot of top 50 residuals in red
+    # plt.axhline(y=0, color='black', linestyle='--')         # Add a horizontal line at y=0 for reference
+    plt.title('RSE Plot')
+    plt.xlabel('X values')
+    plt.xscale('log')
+    plt.ylabel('RSE(residual)')
+    # plt.xticks(np.arange(0, 50000, 1000))
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.show()
+
+    plt.figure(figsize=(8, 6))
+    # plt.scatter(y_test, rse, color='blue', alpha=0.5)  # Scatter plot of residuals vs y-values
+    # print(inverselogt(top_50_y))
+
+    plt.scatter(top_50_x, inverselogt(top_50_y), color='red')     # Scatter plot of top 50 residuals in red
+    plt.scatter(X_test, inverselogt(y_test), color='blue',alpha=0.5)
+    # plt.axhline(y=0, color='black', linestyle='--')         # Add a horizontal line at y=0 for reference
+    plt.title('RSE Plot')
+    plt.xlabel('X values')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.ylabel('y value')
+    # plt.xticks(np.arange(0, 50000, 1000))
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.show()
+
+    # plt.scatter(y_test, rse, color='blue', alpha=0.5)  # Scatter plot of residuals vs y-values
+    # print(inverselogt(top_50_y))
+    for i in range(0,7):
+        plt.figure(figsize=(8, 6))
+        plt.scatter(top_50_x_daily[i], inverselogt(top_50_y), color='red')     # Scatter plot of top 50 residuals in red
+        plt.scatter(X_daily[i], inverselogt(y_test), color='blue',alpha=0.5)
+        # plt.axhline(y=0, color='black', linestyle='--')         # Add a horizontal line at y=0 for reference
+        plt.title('RSE Plot')
+        plt.xlabel(f'X values(single day){i}')
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.ylabel('y value')
+        # plt.xticks(np.arange(0, 50000, 1000))
+        plt.xticks(rotation=45)
+        plt.grid(True)
+        plt.show()
+    for i in range(0,7):
+        plt.figure(figsize=(8, 6))
+        plt.scatter(X_daily[i]/X_test, rse, color='blue')     # Scatter plot of top 50 residuals in red
+        plt.scatter(top_50_x_daily[i]/top_50_x, top_50_rse, color='red',alpha=0.5)
+        # plt.axhline(y=0, color='black', linestyle='--')         # Add a horizontal line at y=0 for reference
+        plt.title('RSE Plot')
+        plt.xlabel(f'X ratio{i}')
+
+
+        plt.ylabel('rse')
+        # plt.xticks(np.arange(0, 50000, 1000))
+        plt.xticks(rotation=45)
+        plt.grid(True)
+        plt.show()
+
+    print(top_50_x_daily[-1]/top_50_x)

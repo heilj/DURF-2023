@@ -98,6 +98,6 @@ def main(CLASS,source,regressor='ridge', classfied=True, include_rbf= True,thres
             SVR_MLR(file2lst,svr_params)
 
 
-main(CLASS1,source1,'ridge',False, False,0.3,200,8)
+main(CLASS1,source1,'ridge',False, False,0.3,thres=500)
 
 

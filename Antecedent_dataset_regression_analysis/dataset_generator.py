@@ -9,6 +9,7 @@ def load_visual_features(type):
     file_path = f'top_{type}_tokens_len=500.pkl'
     with open(file_path,'rb') as file:
         token_data = pickle.load(file)
+        print(token_data)
     file.close()
     return token_data
 
@@ -21,15 +22,15 @@ def preprocess_data(view_and_tokens):
     view_data = np.array([item[1] for item in data])
     dependent_values = np.array([item[2][0] for item in data])
     scalar = RobustScaler()
-    view_data = logt(view_data)
-    dependent_values = logt(dependent_values)
-    view_data = scalar.fit_transform(view_data) 
+    # view_data = logt(view_data) #log transform on x
+    # dependent_values = logt(dependent_values) #log transform on y
+    # view_data = scalar.fit_transform(view_data) #normalization on x
     raw_content_data = np.array([item[3] for item in data]) 
     return view_data, dependent_values, raw_content_data
 
 def generate(CLASS):
     tokenized_datasets = load_visual_features(CLASS)
-    view_raw = read_file("top_dao.csv",tokenized_datasets,True,7,29,1000)
+    view_raw = read_file("top_dao.csv",tokenized_datasets,True,7,30,500)
     view_and_tokens = select_view_data(CLASS, view_raw)
     view_data, y, raw_content_data = preprocess_data(view_and_tokens)
     print(view_data.shape)
@@ -44,8 +45,8 @@ def generate(CLASS):
     test_dataset = Dataset.from_dict({'x': test_x, 'y': test_y})
     final_dataset_dict = DatasetDict({'train': train_dataset, 'test': test_dataset})
     # print((final_dataset_dict['test']['x'][2]))
-    final_dataset_dict.save_to_disk(f'top_{CLASS}_dataset_500')
+    final_dataset_dict.save_to_disk(f'top_{CLASS}_dataset_500_y_unnormalized')
 
-generate('viral')
+generate('quality')
 
 

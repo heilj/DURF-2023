@@ -17,6 +17,7 @@ def main(pathin, pathout):
     for id, action in string_lst.items():
         token = tokenize(action)
         tokens[id] = token
+    print(tokens)
     with open(pathout, "wb") as file:
         pickle.dump(tokens, file)
 

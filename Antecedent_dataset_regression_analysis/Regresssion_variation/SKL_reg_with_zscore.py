@@ -15,7 +15,7 @@ def main():
     # classfied = False
     file2lst = read_file('top_dao.csv')
     if classfied:
-        regression_lst = classfy("quality", file2lst, 0.3)
+        regression_lst = classfy("viral", file2lst, 0.3)
         MLR(regression_lst)
     else:
         MLR(file2lst)
@@ -80,7 +80,7 @@ def read_file(file_pass):
 
         for i in range(len(result_list)):
             # if  result_list[i][0] in all_id:
-                if len(result_list[i][1]) > 30 and result_list[i][1][29] != 0 and result_list[i][1][1] > 0 and result_list[i][1][29] > 10:
+                if len(result_list[i][1]) > 30 and result_list[i][1][29] != 0 and result_list[i][1][1] > 0 and result_list[i][1][29] > 1000:
                     # print(result_list[i][1])
                     k = result_list[i][1][29]
                     

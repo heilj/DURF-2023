@@ -22,7 +22,7 @@ CLASS4 = 'junk'
 source1 = 'top'
 source2 = 'random'
 
-xgb_param_rbf = {'colsample_bytree': 0.5,
+quality_param_rbf = {'colsample_bytree': 0.5,
                  'gamma': 0, 
                  'learning_rate': 0.03, 
                  'max_depth': 8, 
@@ -31,17 +31,16 @@ xgb_param_rbf = {'colsample_bytree': 0.5,
                  'reg_alpha': 0.1, 
                  'reg_lambda': 0, 
                  'subsample': 0.7}
-# {
-#     'n_estimators': 144,
-#     'learning_rate': 0.01,
-#     'max_depth':  8,  
-#     'min_child_weight': 13,  
-#     'gamma': 0,   
-#     'subsample': 0.6, 
-#     'colsample_bytree': 1,   
-#     'reg_alpha': 0,           
-#     'reg_lambda': 0.5,        
-#     }
+
+viral_param_rbf = {'colsample_bytree': 0.5,
+                 'gamma': 0, 
+                 'learning_rate': 0.03, 
+                 'max_depth': 7, 
+                 'min_child_weight': 6, 
+                 'n_estimators': 135, 
+                 'reg_alpha': 0.1, 
+                 'reg_lambda': 0, 
+                 'subsample': 0.7}
 
 temp_best_rbf = {
     'max_depth': 12,
@@ -83,14 +82,14 @@ param_dist_rbf = {
 }
 
 temp_rbf = {
-    'n_estimators': [110,115,120,125,130,135],
-    'learning_rate': [0.03],
-    'max_depth':  [8],  
-    'min_child_weight': [6],  
+    'n_estimators': [140,150,170,200,250],
+    'learning_rate': [0.01,0.03,0.05,0.1],
+    'max_depth':  [3,4,5,6],  
+    'min_child_weight': [1,3,5,6],  
     'gamma': [0],   
     'subsample': [0.7], 
-    'colsample_bytree': [0.5],   
-    'reg_alpha': [0.1],           
+    'colsample_bytree': [1],   
+    'reg_alpha': [0],           
     'reg_lambda': [0],            
 }
 
@@ -101,9 +100,9 @@ def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= True,thresho
         rbf_data = read_token_file(source, threshold, CLASS, len)
         file2lst = read_file(f'{current_dir}/{source}_dao.csv',rbf_data,True ,tr, tt, thres)
         regression_lst = classfy(CLASS, file2lst, threshold, source)
-        X_train_scaled, y_train, params = GridS_XGB(regression_lst,xgb_param_rbf,temp_rbf)
-        find_best_n_estimators(X_train_scaled, y_train, params)
+        X_train_scaled, y_train, params = GridS_XGB(regression_lst,viral_param_rbf,temp_rbf)
+        # find_best_n_estimators(X_train_scaled, y_train, params)
  
-main(CLASS2,source1,'XGB',classfied=True, include_rbf=True, threshold=0.3,thres=500)
+main(CLASS1,source1,'XGB',classfied=True, include_rbf=True, threshold=0.3,thres=150)
 
 

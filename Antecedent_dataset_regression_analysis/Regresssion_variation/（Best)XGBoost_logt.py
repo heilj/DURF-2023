@@ -81,7 +81,7 @@ def read_file(file_pass):
 
         for i in range(len(result_list)):
             # if  result_list[i][0] in all_id:
-                if len(result_list[i][1]) > 30 and result_list[i][1][29] != 0 and result_list[i][1][1] > 0 and result_list[i][1][29] > 10:
+                if len(result_list[i][1]) > 30 and result_list[i][1][29] != 0 and result_list[i][1][1] > 0 and result_list[i][1][29] > 1000:
                     # print(result_list[i][1])
                     k = result_list[i][1][29]
                     
@@ -127,13 +127,13 @@ def classfy(CLASS, videos, threshold):
     把dataset中的data根据一个threshold归到一个类中
     """
     if CLASS == "viral":
-        path = 'classfied_random/viral_classes.txt'
+        path = 'classfied_top/viral_classes.txt'
     elif CLASS == "quality":
-        path = "classfied_random/quality_classes.txt"
+        path = "classfied_top/quality_classes.txt"
     elif CLASS == "junk":
-        path = "classfied_random/junk_classes.txt"
+        path = "classfied_top/junk_classes.txt"
     elif CLASS == "memoryless":
-        path = "classfied_random/memoryless_classes.txt"
+        path = "classfied_top/memoryless_classes.txt"
     
     #从txt文件中读取所有该列别的视频id
     file = open(path,"r")
