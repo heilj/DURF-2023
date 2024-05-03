@@ -120,19 +120,19 @@ def main(CLASS,source,regressor='XGB', classfied=True, include_rbf= None,thresho
         regression_lst = classfy(CLASS, file2lst, threshold, source)
         # GridS_XGB(regression_lst,xgb_param,temp)
         (mse, y_test), (mse_train, y_train),x_test = baseline_XGB(regression_lst, param= xgb_param)
-        residual_plot(mse, y_test,x_test)
+        # residual_plot(mse, y_test,x_test)
 
-        remaining_indices = np.argsort(mse)[:-20]
+        # remaining_indices = np.argsort(mse)[:-20]
 
-        # Extract corresponding y-values and residuals
-        remaining_y = y_test[remaining_indices]
-        remaining_mse = mse[remaining_indices]
-        print(np.mean(remaining_mse ** 2))
+        # # Extract corresponding y-values and residuals
+        # remaining_y = y_test[remaining_indices]
+        # remaining_mse = mse[remaining_indices]
+        # print(np.mean(remaining_mse ** 2))
 
     else:
         GridS_XGB(file2lst,xgb_param,temp)
  
 
-main(CLASS1,source1,'XGB',classfied=True, include_rbf=None, threshold=0.3,thres=500)
+main(CLASS1,source1,'XGB',classfied=True, include_rbf=None, threshold=0.3,thres=300)
 
 

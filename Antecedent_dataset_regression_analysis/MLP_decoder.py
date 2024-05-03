@@ -107,8 +107,8 @@ for epoch in range(num_epochs):
     my_lr = lr_scheduler.get_last_lr()[0]
     print("loss:", loss, "lr", my_lr)
 
-PATH = '/Users/gqs/Documents/DURF/DURF-2023/Antecedent_dataset_regression_analysis/model_quality2.pth'
-torch.save(custom_model.state_dict(), PATH)
+# PATH = '/Users/gqs/Documents/DURF/DURF-2023/Antecedent_dataset_regression_analysis/model_quality2.pth'
+# torch.save(custom_model.state_dict(), PATH)
 # Evaluation
 # metric = evaluate.load("accuracy")
 

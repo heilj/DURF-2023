@@ -95,6 +95,17 @@ def read_rbf_file(type='top',thres=0.3,CLASS='viral',centroids=10,sigma=50):
     file.close()
     return rbf_data
 
+def read_onehot_file(type='top',CLASS='viral'):
+    file_path = f'{type}_{CLASS}_onehot_vector.pkl'  
+    with open(file_path,'rb') as file:
+        raw_data = pickle.load(file)
+    file.close()
+    data = {}
+    for id, matirx in raw_data.items():
+        array = np.array(matirx.todense())[0]
+        data[id] = array
+    return data
+
 def read_knn_file(type='top',thres=0.3,CLASS='viral',centroids=10,k=3):
     file_path = f'knn_{type}_{thres}_{CLASS}_centroids={centroids}_k={k}.pkl'      
     with open(file_path,'rb') as file:
@@ -139,8 +150,8 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=30,thres=10):
 
         for i in range(len(result_list)):
             if  result_list[i][0] in all_id:
-                if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr+1] > 100 and result_list[i][1][tt] > thres \
-                    and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
+                if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr+1] > 100 and result_list[i][1][tt] > thres:
+                    # and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
                     k = result_list[i][1][tt]
                     small_lst = result_list[i]
                     id = small_lst[0]
@@ -155,8 +166,8 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=30,thres=10):
             all_id.append(id)
         for i in range(len(result_list)):
             if  result_list[i][0] in all_id:
-                if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr] >100 and result_list[i][1][tt] > thres \
-                    and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
+                if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr] >100 and result_list[i][1][tt] > thres :
+                    # and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
                     k = result_list[i][1][tt]
                     small_lst = result_list[i]
                     small_lst[1] = small_lst[1][1:tr+1]
@@ -166,8 +177,8 @@ def read_file(file_pass,rbf_data ,rbf=None, tr=7, tt=30,thres=10):
                     result.append(small_lst)
     else:
          for i in range(len(result_list)):
-            if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr+1] > 100 and result_list[i][1][tt] > thres \
-                    and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
+            if len(result_list[i][1]) > 30 and result_list[i][1][1] != 0 and result_list[i][1][tr+1] > 100 and result_list[i][1][tt] > thres :
+                    # and (1 - (result_list[i][1][tr]/ result_list[i][1][tr+1])) < 0.1 and (1 - (result_list[i][1][tr-1]/ result_list[i][1][tr])) < 0.1:
                 k = result_list[i][1][tt]
                 small_lst = result_list[i]
                 small_lst[1] = small_lst[1][1:tr+1]

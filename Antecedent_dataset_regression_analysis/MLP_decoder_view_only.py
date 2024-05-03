@@ -17,12 +17,13 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 print(device)
 
 batch_size = 32
-
-# Load dataset
-dataset = datasets.load_from_disk("top_quality_dataset_500_unnormalized")
-dataset = dataset.map(lambda example: {"x": example["x"][7:], "z": example["x"][:7], "y": example["y"]})
+scalar = RobustScaler()
 scalar_train = RobustScaler()
 scalar_test = RobustScaler()
+# Load dataset
+dataset = datasets.load_from_disk("top_viral_dataset_500")
+dataset = dataset.map(lambda example: {"x": example["x"][7:], "z": example["x"][:7], "y": example["y"]})
+
 
 # Load tokenizer and BERT model
 # tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
@@ -32,8 +33,8 @@ scalar_test = RobustScaler()
 #define loss
 
 def CustomLoss(my_outputs, my_labels):
-    # my_outputs = torch.expm1(my_outputs)
-    # my_labels = torch.expm1(my_labels)
+    my_outputs = torch.expm1(my_outputs)
+    my_labels = torch.expm1(my_labels)
     my_outputs = ((my_outputs/my_labels) - 1)**2
     my_outputs = torch.mean(my_outputs)
     return my_outputs
@@ -51,6 +52,16 @@ class CustomClassifier(nn.Module):
         
         self.layer1 = nn.Linear(7, 1)
         self.batch_norm1 = nn.BatchNorm1d(1)
+        self.layer2 = nn.Linear(16, 16)
+        self.batch_norm2 = nn.BatchNorm1d(16)
+        self.layer3 = nn.Linear(16, 1)
+        self.batch_norm3 = nn.BatchNorm1d(1)
+        self.layer4 = nn.Linear(64, 32)
+        self.batch_norm4 = nn.BatchNorm1d(32)
+        self.layer5 = nn.Linear(32, 8)
+        self.batch_norm5 = nn.BatchNorm1d(8)
+        self.layer6 = nn.Linear(8, 1)
+        self.batch_norm6 = nn.BatchNorm1d(1)
 
 
     def forward(self,seven_views, attention_mask=None):
@@ -64,7 +75,22 @@ class CustomClassifier(nn.Module):
         # print(self.intercept.shape)
         # outputs = torch.cat((outputs,self.intercept),dim=1)
         outputs = self.layer1(outputs)
-        outputs = self.batch_norm1(outputs)
+        # outputs = self.batch_norm1(outputs)
+        outputs = F.relu(outputs)
+        outputs = self.layer2(outputs)
+        # outputs = self.batch_norm2(outputs)
+        outputs = F.relu(outputs)
+        outputs = self.layer3(outputs)
+        # outputs = self.batch_norm3(outputs)
+        outputs = F.relu(outputs)
+        outputs = self.layer4(outputs)
+        # outputs = self.batch_norm4(outputs)
+        outputs = F.relu(outputs)
+        outputs = self.layer5(outputs)
+        # outputs = self.batch_norm5(outputs)
+        outputs = F.relu(outputs)
+        outputs = self.layer6(outputs)
+        # outputs = self.batch_norm6(outputs)
         outputs = F.relu(outputs)
         
         return outputs
@@ -74,8 +100,8 @@ custom_model = CustomClassifier()
 # Move the model to the desired device
 custom_model.to(device)
 # Create optimizer and scheduler
-optimizer = AdamW(custom_model.parameters(), lr=5e-3)
-num_epochs = 100
+optimizer = AdamW(custom_model.parameters(), lr=1e-2)
+num_epochs = 1000
 num_training_steps = num_epochs * len(dataset["train"]) // batch_size  # Adjust batch size
 lr_scheduler = get_scheduler(
     name="linear", optimizer=optimizer, num_warmup_steps=0, num_training_steps=num_training_steps
@@ -90,7 +116,7 @@ for epoch in range(num_epochs):
     for batch in DataLoader(dataset["train"], shuffle=True, batch_size=batch_size):
         batch = {k: v.to(device) for k, v in batch.items()}
         outputs = custom_model(batch["z"]).to(device) 
-        loss = mse(outputs, batch["y"].float())      
+        loss = CustomLoss(outputs, batch["y"].float())      
         loss.backward()
         optimizer.step()
         lr_scheduler.step()

@@ -9,8 +9,8 @@ import torch
 from sklearn.feature_extraction.text import CountVectorizer
 import json
 
-pathin = "top_thres0.3_quality_checked.txt2"
-pathout = "top_quality_onehot_vector.pkl"
+pathin = "top_thres0.3_viral_checked.txt"
+pathout = "top_viral_onehot_vector.pkl"
 with open('kinetics_classnames.json', 'r') as json_file:
     classes = json.load(json_file)
     lexicon = classes.keys()
@@ -41,13 +41,13 @@ def get_feature(path):
         content = line.strip('\n')
         video_id = content  # getting the video id
         
-        for foldername, subfolders, filenames in os.walk('Visual_content/video_pkl_quality'):
+        for foldername, subfolders, filenames in os.walk('Visual_content/video_pkl_viral'):
             for filename in filenames:
                 if video_id in filename:
                     break    
         try:
             
-            with open(f'Visual_content/video_pkl_quality/{video_id}.mp4.pkl', 'rb') as video_file:
+            with open(f'Visual_content/video_pkl_viral/{video_id}.mp4.pkl', 'rb') as video_file:
                 loaded_data = pickle.load(video_file)
                 action_labels = loaded_data["actions"]
                 # processing the action labels into a string
